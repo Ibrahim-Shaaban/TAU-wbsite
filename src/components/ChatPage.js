@@ -2,11 +2,7 @@ import React from "react";
 
 class ChatPage extends React.Component {
   render() {
-    return (
-      <div>
-        <div id="Chat">ChatPage</div>
-      </div>
-    );
+    return <div>ChatPage</div>;
   }
 }
 

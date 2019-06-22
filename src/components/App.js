@@ -7,6 +7,7 @@ import MedicalAssistantPage from "./MedicalAssistantPage";
 import ChatPage from "./ChatPage";
 import XRayPage from "./XRayPage";
 import SkinCancerPage from "./SkinCancerPage";
+import ImageForm from "./ImageForm";
 
 class App extends React.Component {
   renderPage = () => {
@@ -19,9 +20,11 @@ class App extends React.Component {
       case "chat":
         return <ChatPage />;
       case "xRay":
-        return <XRayPage />;
+        return <ImageForm endpoint="xray" />;
+      // return <XRayPage />;
       case "skin":
-        return <SkinCancerPage />;
+        return <ImageForm endpoint="skin" />;
+      // return <SkinCancerPage />;
       default:
         console.log("default");
     }

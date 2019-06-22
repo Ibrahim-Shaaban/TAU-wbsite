@@ -9,7 +9,8 @@ class XRayPage extends React.Component {
     super(props);
     this.state = {
       imageFile: null,
-      uploadStatus: false
+      uploadStatus: false,
+      error: null
     };
   }
 
@@ -29,27 +30,51 @@ class XRayPage extends React.Component {
       })
       .then(res => {
         console.log(res);
+        // for handling not uploading the same image each time into the form
+        document.getElementById("ResetBtn").click();
         this.setState({ uploadStatus: true, imageFile: null });
       })
       .catch(err => console.log("error", err));
   };
 
-  onFileChange = e => {
-    console.log("image : ", e.target.files[0]);
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(e.target.files[0]);
-    fileReader.onload = event => {
-      document.getElementById("imageDisp").src = event.target.result;
-    };
+  imageValidator = file => {
+    const fileExt = file.name.split(".").pop();
+    const acceptedTypes = ["png", "jpg", "jpeg"];
+    if (
+      acceptedTypes.filter(type => fileExt.toLowerCase() === type).length >= 1
+    ) {
+      return 1;
+    } else {
+      return 0;
+    }
+  };
 
-    this.setState({ imageFile: e.target.files[0], uploadStatus: false });
+  onFileChange = e => {
+    const imageFile = e.target.files[0];
+    console.log("image : ", imageFile);
+
+    if (this.imageValidator(imageFile)) {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(imageFile);
+      fileReader.onload = event => {
+        document.getElementById("imageDisp").src = event.target.result;
+      };
+
+      this.setState({ imageFile: imageFile, uploadStatus: false, error: "" });
+    } else {
+      this.setState({ error: "Invalid FileType" });
+    }
   };
 
   render() {
-    const { imageFile, uploadStatus } = this.state;
+    const { imageFile, uploadStatus, error } = this.state;
+
     return (
-      <div style={{ padding: 100, textAlign: "center" }}>
+      <div style={{ padding: 10, textAlign: "center" }}>
         <Form onSubmit={this.OnFormSubmit}>
+          <Button id="ResetBtn" type="reset" style={{ visibility: "hidden" }}>
+            Reset
+          </Button>
           <Form.Group>
             <Form.Label> Xray Image </Form.Label>
             <Form.Control
@@ -65,14 +90,33 @@ class XRayPage extends React.Component {
           >
             Choose Image ...
           </Button>
-          <Button variant="primary" type="submit">
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={error ? true : false}
+          >
             Upload
           </Button>
         </Form>
-        {uploadStatus ? (
-          <div style={{ paddingTop: 20 }}>image uploaded Successfully ....</div>
+        {error ? (
+          <div style={{ paddingTop: 20 }} className="text-danger">
+            {error}
+          </div>
+        ) : uploadStatus ? (
+          <div style={{ paddingTop: 20 }} className="text-primary">
+            image uploaded Successfully ....
+          </div>
         ) : (
-          <Image id="imageDisp" src={imageFile} fluid />
+          <Image
+            id="imageDisp"
+            src={imageFile}
+            style={{
+              marginTop: 10,
+              width: 250,
+              height: 250,
+              visibility: imageFile ? "visible" : "hidden"
+            }}
+          />
         )}
       </div>
     );

@@ -1,5 +1,13 @@
 import React from "react";
 import Recorder from "recorder-js";
+import { Button, Row, Col, Alert } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faMicrophone,
+  faMicrophoneSlash
+} from "@fortawesome/free-solid-svg-icons";
+import Loading from "./Loading";
+// import "./ChatPage.css";
 
 class ChatPage extends React.Component {
   constructor() {
@@ -17,10 +25,7 @@ class ChatPage extends React.Component {
       currentClinetInedx: 0,
       currentChatIndex: 1,
       allChatArray: [],
-      clientPushState: 0,
-      clientEditState: 0,
-      chatPushState: 0,
-      chattEditState: 0
+      canStartButton: true
     };
     this.audioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
@@ -47,7 +52,8 @@ class ChatPage extends React.Component {
         clientSpeechLoading: false,
         chatSpeech: "",
         chatSound: "",
-        chatState: false // for loading
+        chatState: false, // for loading ,,
+        canStartButton: false
       })
     );
   };
@@ -162,12 +168,10 @@ class ChatPage extends React.Component {
                       chatState: true,
                       chatSound: res.data,
                       currentClinetInedx: currentClinetInedx + 2,
-                      currentChatIndex: currentChatIndex + 2
+                      currentChatIndex: currentChatIndex + 2,
+                      canStartButton: true
                     });
-                    // console.log(
-                    //   "after third api success",
-                    //   this.state.allChatArray
-                    // );
+
                     this.sound("data:audio/wav;base64," + res.data);
                   });
               })
@@ -209,17 +213,19 @@ class ChatPage extends React.Component {
                       chatState: true,
                       chatSound: res.data,
                       currentClinetInedx: currentClinetInedx + 2,
-                      currentChatIndex: currentChatIndex + 2
+                      currentChatIndex: currentChatIndex + 2,
+                      canStartButton: true
                     });
                     this.sound("data:audio/wav;base64," + res.data);
                   });
               });
           }
           if (res.error === "1") {
+            // error in speech to text api
             // console.log("please try again");
             const { allChatArray, currentClinetInedx } = this.state;
             allChatArray.splice(currentClinetInedx, 1);
-            this.setState({ allChatArray });
+            this.setState({ allChatArray, canStartButton: true });
           }
         });
     });
@@ -229,85 +235,127 @@ class ChatPage extends React.Component {
     console.log("Get stream failed", error);
   };
 
-  clientSpeech = () => {
-    const { clientSpeech, clientSpeechLoading } = this.state;
-    if (clientSpeechLoading) {
-      return <div>{`loading`}</div>;
-    }
-    if (clientSpeech) {
-      return <div>{`You : ${clientSpeech}`}</div>;
-    }
-  };
-
-  chatSpeech = () => {
-    const { chatSpeech, chatState, chatSound } = this.state;
-    if (chatState === "loading") {
-      return <div>loading</div>;
-    }
-    if (chatSpeech && chatState) {
-      return (
-        <div>
-          {`TAU : ${chatSpeech}`}
-          <button
-            onClick={() => {
-              this.sound("data:audio/wav;base64," + chatSound);
-            }}
-          >
-            hear again
-          </button>
-        </div>
-      );
-    }
-  };
-
   handleView = () => {
     const { allChatArray } = this.state;
-    return allChatArray.map(obj => {
+    const view = allChatArray.map((obj, index) => {
       if (obj.type === "client") {
         if (obj.clientSpeechLoading) {
-          return <div>loading</div>;
+          return (
+            <Alert
+              key={`${index}`}
+              variant="dark"
+              style={{ padding: 3, marginTop: 5, marginBottom: 5 }}
+            >
+              <Row>
+                <Col md="1">
+                  <h4>You :</h4>
+                </Col>
+                <Col md="11" style={{ marginTop: 5, marginLeft: "-30px" }}>
+                  <Loading />
+                </Col>
+              </Row>
+            </Alert>
+          );
         }
         if (obj.clientSpeech) {
-          return <div>{`You : ${obj.clientSpeech}`}</div>;
+          // return <div>{`You : ${obj.clientSpeech}`}</div>;
+          return (
+            <Alert
+              key={`${index}-`}
+              variant="dark"
+              style={{ padding: 3, marginTop: 5, marginBottom: 5 }}
+            >
+              <Row>
+                <Col md="1">
+                  <h4>You :</h4>
+                </Col>
+                <Col md="11" style={{ marginLeft: "-30px", marginTop: 5 }}>
+                  {obj.clientSpeech}
+                </Col>
+              </Row>
+            </Alert>
+          );
         }
       }
       if (obj.type === "chat") {
         if (obj.chatState === "loading") {
-          return <div>loading</div>;
+          return (
+            <Alert key={`${index}`} variant="success" style={{ padding: 3 }}>
+              <Row>
+                <Col md="1">
+                  <h4>TAU :</h4>
+                </Col>
+                <Col md="11" style={{ marginTop: 5, marginLeft: "-30px" }}>
+                  <Loading />
+                </Col>
+              </Row>
+            </Alert>
+          );
         }
         if (obj.chatSpeech && obj.chatState) {
           return (
-            <div>
-              {`TAU : ${obj.chatSpeech}`}
-              <button
-                onClick={() => {
-                  this.sound("data:audio/wav;base64," + obj.chatSound);
-                }}
-              >
-                hear again
-              </button>
-            </div>
+            <Alert key={`${index}-`} variant="success" style={{ padding: 3 }}>
+              <Row>
+                <Col md="1">
+                  <h4>TAU :</h4>
+                </Col>
+                <Col md="11" style={{ marginLeft: "-30px", marginTop: 3 }}>
+                  {obj.chatSpeech}
+                  <Button
+                    style={{ marginLeft: 10 }}
+                    variant="success"
+                    size="sm"
+                    onClick={() => {
+                      this.sound("data:audio/wav;base64," + obj.chatSound);
+                    }}
+                  >
+                    hear again
+                  </Button>
+                </Col>
+              </Row>
+            </Alert>
           );
         }
       }
     });
+    return view;
   };
 
   render() {
-    const { isRecording } = this.state;
+    const { isRecording, canStartButton } = this.state;
+
     // console.log(allChatArray);
     return (
-      <div>
-        <div>
+      <div style={{ marginTop: 5, overflow: "hidden" }}>
+        <div className="text-center">
           {!isRecording ? (
-            <button onClick={this.start}>start</button>
+            <Button
+              disabled={!canStartButton}
+              variant="outline-primary"
+              onClick={this.start}
+            >
+              start <FontAwesomeIcon icon={faMicrophone} size="lg" />
+            </Button>
           ) : (
-            <button onClick={this.stop}>stop</button>
+            <Button variant="outline-primary" onClick={this.stop}>
+              stop <FontAwesomeIcon icon={faMicrophoneSlash} size="lg" />
+            </Button>
           )}
         </div>
         {/* <div>{this.clientSpeech()}</div>
         <div>{this.chatSpeech()}</div> */}
-        <div>{this.handleView()}</div>
+        <div
+          id="view"
+          style={{
+            overflowY: "auto",
+            overflowX: "hidden",
+            height: "400px",
+            width: "100%",
+            paddingRight: "28px"
+          }}
+        >
+          {this.handleView()}
+        </div>
       </div>
     );
   }

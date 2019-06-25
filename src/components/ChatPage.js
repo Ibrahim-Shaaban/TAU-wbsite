@@ -67,11 +67,6 @@ class ChatPage extends React.Component {
 
   stop = () => {
     this.recorder.stop().then(({ blob }) => {
-      // this.setState({
-      //   isRecording: false,
-      //   blob,
-      //   clientSpeechLoading: true
-      // });
       const { allChatArray, clientSpeech } = this.state;
       allChatArray.push({
         clientSpeechLoading: true,
@@ -85,17 +80,11 @@ class ChatPage extends React.Component {
         clientSpeechLoading: true
       });
 
-      // console.log(this.state.clientSpeechLoading);
-      // console.log("after stop", this.state.allChatArray);
-      // console.log(blob);
       let fd = new FormData();
       fd.append("fname", "sound_file");
       fd.append("data", blob);
       // call speech-to-text api
       fetch("http://127.0.0.1:9000/api/record", {
-        // headers: {
-        // 'Content-Type': 'false'
-        // },
         method: "PUT",
         body: fd
       })
@@ -104,11 +93,6 @@ class ChatPage extends React.Component {
           if (res.error === "0") {
             console.log("client said : ", res.text);
 
-            // this.setState({
-            //   clientSpeech: res.text,
-            //   chatState: "loading",
-            //   clientSpeechLoading: false
-            // });
             const {
               allChatArray,
               currentClinetInedx,
@@ -132,7 +116,7 @@ class ChatPage extends React.Component {
               chatState: "loading",
               clientSpeechLoading: false
             });
-            // console.log("after first api success", this.state.allChatArray);
+            // call chatbot api
             fetch("http://127.0.0.1:7000/api/chatbot", {
               headers: {
                 Accept: "application/json",
@@ -149,12 +133,8 @@ class ChatPage extends React.Component {
                 console.log("chatbot result :", result);
 
                 this.setState({ chatSpeech: result });
-                // console.log(
-                //   "after second api success",
-                //   this.state.allChatArray
-                // );
                 let data = { text: result };
-                // console.log(JSON.stringify(data.text)) ;
+                // call text-to-speech api
                 fetch("http://127.0.0.1:8000/api/speech", {
                   headers: {
                     Accept: "application/json",
@@ -165,12 +145,6 @@ class ChatPage extends React.Component {
                 })
                   .then(res => res.json())
                   .then(res => {
-                    // this.setState({
-                    //   chatState: true,
-                    //   chatSound: res.data,
-                    //   currentClinetInedx: currentClinetInedx + 2,
-                    //   currentChatIndex: currentChatIndex + 2
-                    // });
                     const {
                       chatSpeech,
                       allChatArray,
@@ -197,10 +171,55 @@ class ChatPage extends React.Component {
                     this.sound("data:audio/wav;base64," + res.data);
                   });
               })
-              .catch(console.log);
+              .catch(err => {
+                // error from chatbot api
+                const errorMessage =
+                  "sorry , i can't understand . please try again ";
+                this.setState({
+                  chatSpeech: errorMessage
+                });
+                let data = {
+                  text: errorMessage
+                };
+                // call text-to-speech api
+                fetch("http://127.0.0.1:8000/api/speech", {
+                  headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                  },
+                  method: "POST",
+                  body: JSON.stringify(data)
+                })
+                  .then(res => res.json())
+                  .then(res => {
+                    const {
+                      chatSpeech,
+                      allChatArray,
+                      currentClinetInedx,
+                      currentChatIndex
+                    } = this.state;
+                    allChatArray[currentChatIndex] = {
+                      chatState: true,
+                      chatSound: res.data,
+                      chatSpeech,
+                      type: "chat"
+                    };
+                    this.setState({
+                      allChatArray,
+                      chatState: true,
+                      chatSound: res.data,
+                      currentClinetInedx: currentClinetInedx + 2,
+                      currentChatIndex: currentChatIndex + 2
+                    });
+                    this.sound("data:audio/wav;base64," + res.data);
+                  });
+              });
           }
           if (res.error === "1") {
-            console.log("please try again");
+            // console.log("please try again");
+            const { allChatArray, currentClinetInedx } = this.state;
+            allChatArray.splice(currentClinetInedx, 1);
+            this.setState({ allChatArray });
           }
         });
     });
@@ -211,73 +230,21 @@ class ChatPage extends React.Component {
   };
 
   clientSpeech = () => {
-    const {
-      clientSpeech,
-      clientSpeechLoading
-      // allChatArray,
-      // currentClinetInedx,
-      // clientEditState,
-      // clientPushState
-    } = this.state;
+    const { clientSpeech, clientSpeechLoading } = this.state;
     if (clientSpeechLoading) {
-      // console.log("clientSpeechLoading", clientSpeechLoading);
-      // if (clientPushState === 0) {
-      //   // check if we pushed this before
-      //   allChatArray.push({
-      //     type: "client",
-      //     clientSpeechLoading,
-      //     clientSpeech
-      //   });
-      //   this.setState({ allChatArray, clientPushState: 1 });
-      //   // console.log(allChatArray);
-      // }
-
       return <div>{`loading`}</div>;
     }
     if (clientSpeech) {
-      // if (clientEditState === 0) {
-      //   allChatArray[currentClinetInedx] = {
-      //     type: "client",
-      //     clientSpeech,
-      //     clientSpeechLoading
-      //   };
-      //   this.setState({ allChatArray, clientEditState: 1 });
-      //   // console.log(allChatArray);
-      // }
-
       return <div>{`You : ${clientSpeech}`}</div>;
     }
   };
 
   chatSpeech = () => {
-    const {
-      chatSpeech,
-      chatState,
-      chatSound
-      // allChatArray,
-      // currentChatIndex,
-      // chatPushState,
-      // chattEditState
-    } = this.state;
+    const { chatSpeech, chatState, chatSound } = this.state;
     if (chatState === "loading") {
-      // if (chatPushState === 0) {
-      //   allChatArray.push({ type: "chat", chatState, chatSpeech, chatSound });
-      //   this.setState({ allChatArray, chatPushState: 1 });
-      // }
-
       return <div>loading</div>;
     }
     if (chatSpeech && chatState) {
-      // if (chattEditState === 0) {
-      //   allChatArray[currentChatIndex] = {
-      //     type: "chat",
-      //     chatState,
-      //     chatSpeech,
-      //     chatSound
-      //   };
-      //   this.setState({ allChatArray, chattEditState: 1 });
-      // }
-
       return (
         <div>
           {`TAU : ${chatSpeech}`}

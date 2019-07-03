@@ -8,13 +8,14 @@ import ChatPage from "./ChatPage";
 import XRayPage from "./XRayPage";
 import SkinCancerPage from "./SkinCancerPage";
 import ImageForm from "./ImageForm";
+import Footer from "./Footer";
 
 class App extends React.Component {
   renderPage = () => {
     const { currentPage } = this.props;
     switch (currentPage) {
       case "home":
-        return <HomePage />;
+        return <HomePage currentPage={currentPage} />;
       case "medical":
         return <MedicalAssistantPage />;
       case "chat":
@@ -35,6 +36,11 @@ class App extends React.Component {
       <div>
         <Header />
         <Container>{this.renderPage()}</Container>
+        <Footer>
+          <a href="#">Lol</a>
+          <a href="#">Heheh</a>
+          <a href="#">blah blah</a>
+        </Footer>
       </div>
     );
   }

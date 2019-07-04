@@ -54,18 +54,6 @@ class MedicalAssistantPage extends React.Component {
   start = () => {
     this.recorder.start().then(() =>
       this.setState({
-        // // isRecording: true,
-        // blob: null,
-        // stream: null,
-        // analyserData: { data: [], lineTo: 0 },
-        // clientSpeech: "",
-        // clientSpeechLoading: false,
-        // chatSpeech: "",
-        // chatSound: "",
-        // chatState: false, // for loading ,,
-        // canStartButton: false,
-        // viewQuestions: false ,
-        //
         blob: null,
         isRecording: true,
         isRecordingAnswer: false,
@@ -181,7 +169,8 @@ class MedicalAssistantPage extends React.Component {
         // allChatArray,
         isRecording: false,
         blob,
-        clientSpeechLoading: true
+        clientSpeechLoading: true,
+        canStartButton: false
       });
 
       let fd = new FormData();
@@ -197,10 +186,35 @@ class MedicalAssistantPage extends React.Component {
           if (res.error === "0") {
             console.log("client said : ", res.text);
             this.setState({
-              clientSpeechLoading: false,
-              clientSpeech: res.text,
-              canStartButton: true
+              clientSpeech: res.text
             });
+            let data = { text: `Did you mean ${res.text} ?` };
+            // call text-to-speech api
+            fetch("http://127.0.0.1:8000/api/speech", {
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+              },
+              method: "POST",
+              body: JSON.stringify(data)
+            })
+              .then(res => res.json())
+              .then(res => {
+                this.setState({
+                  clientSpeechLoading: false,
+                  clientSpeechSound: res.data,
+                  canStartButton: true
+                });
+                this.sound("data:audio/wav;base64," + res.data);
+              })
+              .catch(err => {
+                this.setState({
+                  clientSpeechLoading: false,
+                  // clientSpeechSound: res.data,
+                  canStartButton: true
+                });
+                alert("please try again");
+              });
           }
           if (res.error === "1") {
             // error in speech to text api
@@ -256,11 +270,12 @@ class MedicalAssistantPage extends React.Component {
     console.log("client said no ");
     this.setState({
       blob: null,
-      isRecording: true,
+      isRecording: false,
       isRecordingAnswer: false,
       stream: null,
       analyserData: { data: [], lineTo: 0 },
       clientSpeech: "",
+      clientSpeechSound: "",
       clientSpeechLoading: false,
       canStartButton: true,
       canStartAnswerButton: true,
@@ -277,11 +292,11 @@ class MedicalAssistantPage extends React.Component {
   };
 
   handelClientSpeech = () => {
-    const { clientSpeech, clientSpeechLoading } = this.state;
+    const { clientSpeech, clientSpeechLoading, clientSpeechSound } = this.state;
     if (clientSpeechLoading) {
       return <Loading />;
     }
-    if (clientSpeech) {
+    if (clientSpeech && clientSpeechSound) {
       return (
         <div>
           <h4>
@@ -296,6 +311,16 @@ class MedicalAssistantPage extends React.Component {
               {clientSpeech}
             </span>{" "}
             ?
+            <Button
+              style={{ marginLeft: 5 }}
+              variant="success"
+              size="sm"
+              onClick={() => {
+                this.sound("data:audio/wav;base64," + clientSpeechSound);
+              }}
+            >
+              hear again
+            </Button>
           </h4>
           <Button onClick={() => this.confirmClientCheck()}>Yes</Button>
           <Button
@@ -349,8 +374,8 @@ class MedicalAssistantPage extends React.Component {
         });
     }
     if (currentQuestionIndex === questions.length && !endOfQuestions) {
-      // end of first questions
-      // call api to get second questions
+      // end of first phase of  questions
+      // call api to get second phase of questions
       let res = ["Are you good", "Are you slow", "Are you fast"];
       this.setState(
         {
@@ -472,6 +497,7 @@ class MedicalAssistantPage extends React.Component {
             {finalResult}
             <Button
               variant="success"
+              style={{ marginLeft: 5 }}
               size="sm"
               onClick={() => {
                 this.sound("data:audio/wav;base64," + finalResultSound);
@@ -517,10 +543,10 @@ class MedicalAssistantPage extends React.Component {
             )}
           </div>
 
-          <Col style={{ marginTop: 5 }} className="text-center">
+          <Col style={{ marginTop: 7 }} className="text-center">
             {this.handelClientSpeech()}
           </Col>
-          <Col style={{ marginTop: 5 }} className="text-center">
+          <Col style={{ marginTop: 7 }} className="text-center">
             {this.handleQuestionView()}
           </Col>
         </Col>

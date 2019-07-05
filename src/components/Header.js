@@ -6,7 +6,12 @@ import { changeCurrentPage } from "../actions";
 class Header extends React.Component {
   render() {
     return (
-      <Navbar bg="dark" expand="lg" variant="dark">
+      <Navbar
+        // bg="dark"
+        expand="lg"
+        variant="dark"
+        style={{ backgroundColor: "#2c3045" }}
+      >
         <Navbar.Brand href="#">
           <div
             onClick={e => {
@@ -31,6 +36,15 @@ class Header extends React.Component {
               </div>
             </Nav.Link>
             <NavDropdown title="Our Services" id="basic-nav-dropdown">
+              <NavDropdown.Item>
+                <div
+                  onClick={e => {
+                    this.props.changeCurrentPage("choose");
+                  }}
+                >
+                  Choose Service
+                </div>
+              </NavDropdown.Item>
               <NavDropdown.Item>
                 <div
                   onClick={e => {

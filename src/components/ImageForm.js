@@ -3,6 +3,8 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 import Image from "react-bootstrap/Image";
+// import { chestUrl } from "../api/localhost";
+import Loading from "./Loading";
 
 class ImageForm extends React.Component {
   constructor(props) {
@@ -10,22 +12,31 @@ class ImageForm extends React.Component {
     this.state = {
       imageFile: null,
       uploadStatus: false,
-      error: null
+      error: null,
+      finalResult: "",
+      resultLoading: false
     };
   }
 
   componentWillReceiveProps() {
-    this.setState({ imageFile: null, uploadStatus: false, error: null });
+    this.setState({
+      imageFile: null,
+      uploadStatus: false,
+      error: null,
+      finalResult: "",
+      resultLoading: false
+    });
   }
 
   OnFormSubmit = e => {
     e.preventDefault();
+    this.setState({ resultLoading: true });
     const { imageFile } = this.state;
     const formData = new FormData();
     formData.append("image", imageFile, imageFile.name);
 
     axios
-      .post(`http://localhost:5001/${this.props.endpoint}`, formData, {
+      .post(this.props.url, formData, {
         onUploadProgress: e => {
           console.log(
             `Uploading .... ${Math.round((e.loaded / e.total) * 100)}%`
@@ -33,10 +44,18 @@ class ImageForm extends React.Component {
         }
       })
       .then(res => {
-        console.log(res);
-        // for handling not uploading the same image each time into the form
-        document.getElementById("ResetBtn").click();
-        this.setState({ uploadStatus: true, imageFile: null });
+        let response = res.data;
+        console.log(response);
+        if (response.error === "0") {
+          this.setState({
+            uploadStatus: true,
+            imageFile: null,
+            resultLoading: false,
+            finalResult: response.text
+          });
+          // for handling not uploading the same image each time into the form
+          // document.getElementById("ResetBtn").click();
+        }
       })
       .catch(err => console.log("error", err));
   };
@@ -64,13 +83,30 @@ class ImageForm extends React.Component {
         document.getElementById("imageDisp").src = event.target.result;
       };
 
-      this.setState({ imageFile: imageFile, uploadStatus: false, error: "" });
+      this.setState({
+        imageFile: imageFile,
+        uploadStatus: false,
+        error: null,
+        finalResult: "",
+        resultLoading: false
+      });
     } else {
       this.setState({ error: "Invalid FileType" });
     }
   };
 
-  render() {
+  handleResult = () => {
+    const { resultLoading, finalResult } = this.state;
+    if (resultLoading && !finalResult) {
+      return <Loading size="large" />;
+    }
+
+    if (finalResult) {
+      return <h4 style={{ color: "white" }}>You have {finalResult}</h4>;
+    }
+  };
+
+  handleView = () => {
     const { imageFile, uploadStatus, error } = this.state;
 
     return (
@@ -91,13 +127,14 @@ class ImageForm extends React.Component {
             />
           </Form.Group>
           <Button
+            variant="primary"
             onClick={() => this.fileInput.click()}
             style={{ marginRight: 10 }}
           >
             Choose Image ...
           </Button>
           <Button
-            variant="primary"
+            variant="secondary"
             type="submit"
             disabled={error ? true : false}
           >
@@ -105,12 +142,20 @@ class ImageForm extends React.Component {
           </Button>
         </Form>
         {error ? (
-          <div style={{ paddingTop: 20 }} className="text-danger">
+          <div
+            style={{ paddingTop: 20, color: "white" }}
+            className="text-danger"
+          >
             {error}
           </div>
         ) : uploadStatus ? (
-          <div style={{ paddingTop: 20 }} className="text-primary">
-            image uploaded Successfully ....
+          <div>
+            <div
+              style={{ paddingTop: 20, color: "white" }}
+              className="text-primary"
+            >
+              image uploaded Successfully ....
+            </div>
           </div>
         ) : (
           <Image
@@ -124,8 +169,13 @@ class ImageForm extends React.Component {
             }}
           />
         )}
+        <div>{this.handleResult()}</div>
       </div>
     );
+  };
+
+  render() {
+    return <div>{this.handleView()}</div>;
   }
 }
 

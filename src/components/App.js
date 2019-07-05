@@ -5,9 +5,12 @@ import HomePage from "./HomePage";
 import Header from "./Header";
 import MedicalAssistantPage from "./MedicalAssistantPage";
 import ChatPage from "./ChatPage";
-import XRayPage from "./XRayPage";
-import SkinCancerPage from "./SkinCancerPage";
+// import XRayPage from "./XRayPage";
+// import SkinCancerPage from "./SkinCancerPage";
 import ImageForm from "./ImageForm";
+import ChoosePage from "./ChoosePage";
+import Particle from "./Particle";
+import { chestUrl, skinUrl } from "../api/localhost";
 
 class App extends React.Component {
   renderPage = () => {
@@ -15,15 +18,17 @@ class App extends React.Component {
     switch (currentPage) {
       case "home":
         return <HomePage />;
+      case "choose":
+        return <ChoosePage />;
       case "medical":
         return <MedicalAssistantPage />;
       case "chat":
         return <ChatPage />;
       case "xRay":
-        return <ImageForm endpoint="xray" />;
+        return <ImageForm url={chestUrl} endpoint="chest" />;
       // return <XRayPage />;
       case "skin":
-        return <ImageForm endpoint="skin" />;
+        return <ImageForm url={skinUrl} endpoint="skin" />;
       // return <SkinCancerPage />;
       default:
         console.log("default");
@@ -34,6 +39,7 @@ class App extends React.Component {
     return (
       <div>
         <Header />
+        <Particle />
         <Container>{this.renderPage()}</Container>
       </div>
     );

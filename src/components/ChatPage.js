@@ -7,6 +7,7 @@ import {
   faMicrophoneSlash
 } from "@fortawesome/free-solid-svg-icons";
 import Loading from "./Loading";
+import { textToSpeechUrl, speechToTextUrl, chatBotUrl } from "../api/localhost";
 // import "./ChatPage.css";
 
 class ChatPage extends React.Component {
@@ -90,7 +91,7 @@ class ChatPage extends React.Component {
       fd.append("fname", "sound_file");
       fd.append("data", blob);
       // call speech-to-text api
-      fetch("http://127.0.0.1:9000/api/record", {
+      fetch(speechToTextUrl, {
         method: "PUT",
         body: fd
       })
@@ -123,7 +124,7 @@ class ChatPage extends React.Component {
               clientSpeechLoading: false
             });
             // call chatbot api
-            fetch("http://127.0.0.1:7000/api/chatbot", {
+            fetch(chatBotUrl, {
               headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json"
@@ -141,7 +142,7 @@ class ChatPage extends React.Component {
                 this.setState({ chatSpeech: result });
                 let data = { text: result };
                 // call text-to-speech api
-                fetch("http://127.0.0.1:8000/api/speech", {
+                fetch(textToSpeechUrl, {
                   headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json"
@@ -186,7 +187,7 @@ class ChatPage extends React.Component {
                   text: errorMessage
                 };
                 // call text-to-speech api
-                fetch("http://127.0.0.1:8000/api/speech", {
+                fetch(textToSpeechUrl, {
                   headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json"
@@ -331,13 +332,13 @@ class ChatPage extends React.Component {
           {!isRecording ? (
             <Button
               disabled={!canStartButton}
-              variant="outline-primary"
+              variant="primary"
               onClick={this.start}
             >
               start <FontAwesomeIcon icon={faMicrophone} size="lg" />
             </Button>
           ) : (
-            <Button variant="outline-primary" onClick={this.stop}>
+            <Button variant="secondary" onClick={this.stop}>
               stop <FontAwesomeIcon icon={faMicrophoneSlash} size="lg" />
             </Button>
           )}

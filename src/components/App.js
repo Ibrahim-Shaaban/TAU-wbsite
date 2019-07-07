@@ -11,6 +11,7 @@ import ImageForm from "./ImageForm";
 import ChoosePage from "./ChoosePage";
 import Particle from "./Particle";
 import { chestUrl, skinUrl } from "../api/localhost";
+import Footer from "./Footer";
 
 class App extends React.Component {
   renderPage = () => {
@@ -20,6 +21,7 @@ class App extends React.Component {
         return <HomePage />;
       case "choose":
         return <ChoosePage />;
+      // return <HomePage currentPage={currentPage} />;
       case "medical":
         return <MedicalAssistantPage />;
       case "chat":
@@ -41,6 +43,11 @@ class App extends React.Component {
         <Header />
         <Particle />
         <Container>{this.renderPage()}</Container>
+        <Footer>
+          <a href="#">Lol</a>
+          <a href="#">Heheh</a>
+          <a href="#">blah blah</a>
+        </Footer>
       </div>
     );
   }

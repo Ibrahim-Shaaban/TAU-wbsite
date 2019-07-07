@@ -28,7 +28,7 @@ class DispalyCard extends React.Component {
                   src={data.image}
                   className="w-100"
                   alt={data.title}
-                  style={{ width: 100, height: "100%" }}
+                  style={{ width: 100, height: 300 }}
                 />
               </div>
             )}
@@ -59,7 +59,7 @@ class DispalyCard extends React.Component {
                   src={data.image}
                   className="w-100"
                   alt={data.title}
-                  style={{ width: 100, height: "100%" }}
+                  style={{ width: 100, height: 300 }}
                 />
               </div>
             ) : (

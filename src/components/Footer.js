@@ -1,23 +1,33 @@
 import React from "react";
+import { Row, Col } from "react-bootstrap";
+// import StickyFooter from "react-sticky-footer";
 
-var style = {
-  backgroundColor: "#F8F8F8",
-  borderTop: "1px solid #E7E7E7",
-  textAlign: "center",
-  //   position: "fixed",
-  //   left: "0",
-  //   bottom: "0",
-  height: "40px",
-  width: "100%"
-  //   float: "right"
-};
+class Footer extends React.Component {
+  render() {
+    return (
+      <div
+        style={{
+          backgroundColor: "rgb(44, 48, 69)",
+          color: "white",
+          width: "100%",
 
-const Footer = ({ children }) => {
-  return (
-    <div>
-      <div style={style}>{children}</div>
-    </div>
-  );
-};
+          position: "absolute",
+
+          bottom: 0,
+
+          height: "2.5rem"
+        }}
+      >
+        <Col md="12">
+          <Row>
+            <Col md="4">content here</Col>
+            <Col md="4">content here</Col>
+            <Col md="4">content here</Col>
+          </Row>
+        </Col>
+      </div>
+    );
+  }
+}
 
 export default Footer;

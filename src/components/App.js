@@ -43,11 +43,7 @@ class App extends React.Component {
         <Header />
         <Particle />
         <Container>{this.renderPage()}</Container>
-        <Footer>
-          <a href="#">Lol</a>
-          <a href="#">Heheh</a>
-          <a href="#">blah blah</a>
-        </Footer>
+        <Footer />
       </div>
     );
   }

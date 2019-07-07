@@ -28,12 +28,17 @@ class ChatPage extends React.Component {
       allChatArray: [],
       canStartButton: true
     };
-    this.audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
-
-    this.recorder = new Recorder(this.audioContext, {
-      onAnalysed: data => this.setState({ analyserData: data })
+    this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+      sampleRate: 16000
     });
+
+    this.recorder = new Recorder(
+      this.audioContext,
+      {},
+      {
+        onAnalysed: data => this.setState({ analyserData: data })
+      }
+    );
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then(stream => {

@@ -1,6 +1,7 @@
 import React from "react";
 import DispalyCard from "./DispalyCard";
-import { CardDeck, Row, Container } from "react-bootstrap";
+import { Row } from "react-bootstrap";
+import ToggleButton from "./ToggleButton";
 // import CardBoot from "./Card
 
 class HomePage extends React.Component {
@@ -48,12 +49,6 @@ class HomePage extends React.Component {
         <DispalyCard reverse={false} data={xrayPageData} />
         <DispalyCard reverse={true} data={skinPageData} />
       </Row>
-      // <Row className="m-4">
-      //   <CardBoot data={medicalPageData} />
-      //   <CardBoot data={chatPageData} />
-      //   <CardBoot data={xrayPageData} />
-      //   <CardBoot data={skinPageData} />
-      // </Row>
     );
   }
 }

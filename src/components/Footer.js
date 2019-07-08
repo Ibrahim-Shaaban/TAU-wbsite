@@ -15,14 +15,14 @@ class Footer extends React.Component {
 
           bottom: 0,
 
-          height: "2.5rem"
+          height: "3rem"
         }}
       >
         <Col md="12">
           <Row>
-            <Col md="4">content here</Col>
-            <Col md="4">content here</Col>
-            <Col md="4">content here</Col>
+            <Col md="12" className="text-center">
+              <h5>all copyrights to our team (TAU TEAM) </h5>
+            </Col>
           </Row>
         </Col>
       </div>

@@ -51,7 +51,7 @@ class ImageForm extends React.Component {
             uploadStatus: true,
             imageFile: null,
             resultLoading: false,
-            finalResult: response.text
+            finalResult: response.text.slice(2, -2)
           });
           // for handling not uploading the same image each time into the form
           // document.getElementById("ResetBtn").click();
@@ -102,7 +102,23 @@ class ImageForm extends React.Component {
     }
 
     if (finalResult) {
-      return <h4 style={{ color: "white" }}>You have {finalResult}</h4>;
+      return (
+        <h4 style={{ color: "white" }}>
+          You have{" "}
+          <span
+            style={{
+              fontStyle: "italic",
+              fontWeight: "bold",
+              fontFamily: "cursive",
+              color: "#f60860",
+              fontSize: "30px" ,
+              
+            }}
+          >
+            {finalResult}
+          </span>
+        </h4>
+      );
     }
   };
 
@@ -116,7 +132,7 @@ class ImageForm extends React.Component {
             Reset
           </Button>
           <Form.Group>
-            <Form.Label>
+            <Form.Label style={{ color: "white" }}>
               {`${this.props.endpoint.toUpperCase()} Image`}
             </Form.Label>
             <Form.Control
@@ -154,7 +170,7 @@ class ImageForm extends React.Component {
               style={{ paddingTop: 20, color: "white" }}
               className="text-primary"
             >
-              image uploaded Successfully ....
+              {/* {image uploaded Successfully ....} */}
             </div>
           </div>
         ) : (

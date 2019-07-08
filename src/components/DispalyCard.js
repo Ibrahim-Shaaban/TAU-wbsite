@@ -73,7 +73,7 @@ class DispalyCard extends React.Component {
 }
 
 const mapStateToProps = state => {
-  console.log("Card : ", state);
+  // console.log("Card : ", state);
   return { currentPage: state.currentPage };
 };
 

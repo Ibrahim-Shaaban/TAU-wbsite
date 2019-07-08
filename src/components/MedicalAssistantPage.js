@@ -7,8 +7,14 @@ import {
   faMicrophoneSlash
 } from "@fortawesome/free-solid-svg-icons";
 import Loading from "./Loading";
-import { textToSpeechUrl, speechToTextUrl } from "../api/localhost";
-import bodyImage from "../images/body.jpg";
+import {
+  textToSpeechUrl,
+  speechToTextUrl,
+  bodyPartUrl,
+  medicalResultUr
+} from "../api/localhost";
+import bodyImage from "../images/body.png";
+import ToggleButton from "./ToggleButton";
 
 class MedicalAssistantPage extends React.Component {
   constructor() {
@@ -23,7 +29,7 @@ class MedicalAssistantPage extends React.Component {
       clientSpeechLoading: false,
       canStartButton: true,
       canStartAnswerButton: true,
-      questions: [],
+      questions: [1],
       currentQuestionIndex: 0,
       answers: [],
       questionLoading: false,
@@ -31,7 +37,8 @@ class MedicalAssistantPage extends React.Component {
       viewQuestions: false,
       endOfQuestions: false,
       finalResult: "",
-      finalResultSound: ""
+      finalResultSound: "",
+      showDefinition: []
     };
     this.audioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
@@ -50,6 +57,10 @@ class MedicalAssistantPage extends React.Component {
 
   headingStyle = {
     color: "white"
+  };
+
+  capitalizeString = string => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   };
   dontGotStream = error => {
     console.log("Get stream failed", error);
@@ -94,8 +105,6 @@ class MedicalAssistantPage extends React.Component {
   // when client stop recording to answer question
   stopAnswerQuestion = () => {
     this.recorder.stop().then(({ blob }) => {
-      // const { allChatArray, clientSpeech } = this.state;
-
       this.setState({
         isRecordingAnswer: false,
         blob,
@@ -115,8 +124,8 @@ class MedicalAssistantPage extends React.Component {
           if (res.error === "0") {
             console.log("client said : ", res.text);
             if (res.text === "yes") {
-              const { currentQuestionIndex, answers } = this.state;
-              answers.push(1);
+              const { currentQuestionIndex, answers, questions } = this.state;
+              answers.push(questions[currentQuestionIndex]);
               this.setState(
                 {
                   canStartAnswerButton: false,
@@ -129,7 +138,7 @@ class MedicalAssistantPage extends React.Component {
               );
             } else if (res.text === "no") {
               const { currentQuestionIndex, answers } = this.state;
-              answers.push(0);
+              // answers.push(0);
               this.setState(
                 {
                   canStartAnswerButton: false,
@@ -186,6 +195,8 @@ class MedicalAssistantPage extends React.Component {
         .then(res => {
           if (res.error === "0") {
             console.log("client said : ", res.text);
+            // handle form of client speech
+            let result = res.text.ca;
             this.setState({
               clientSpeech: res.text
             });
@@ -245,25 +256,36 @@ class MedicalAssistantPage extends React.Component {
   confirmClientCheck = () => {
     // client said yes
     console.log("client said yes");
+    this.setState({
+      questionLoading: true,
+      viewQuestions: true,
+      questions: ["edswfgersthrdtyhrtd"]
+    });
+    const { clientSpeech } = this.state;
+    let data = { part: this.capitalizeString(clientSpeech) };
     // call api to fetch questions from the part chosen by client
-    let res = [
-      "Do you feel hard ? ",
-      "Do you feel slow ? ",
-      "Do you feel fast ? "
-    ];
-    this.setState(
-      {
-        questions: res,
-        clientSpeech: "",
-        questionLoading: true,
-        viewQuestions: true
+    fetch(bodyPartUrl, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
       },
-      () => {
-        this.handleQuestionsAnswering();
-      }
-    );
-
-    // this.handleQuestionsAnswering();
+      method: "POST",
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .then(res =>
+        this.setState(
+          {
+            questions: res,
+            clientSpeech: ""
+            // questionLoading: true,
+            // viewQuestions: true
+          },
+          () => {
+            this.handleQuestionsAnswering();
+          }
+        )
+      );
   };
   // client choose no to his part of body
   cancelClientCheck = () => {
@@ -338,18 +360,38 @@ class MedicalAssistantPage extends React.Component {
       );
     }
   };
+  // make one string from final result
+  handleFinalResultSpeech = finalResult => {
+    const { showDefinition } = this.state;
+    let resultString = "You have ";
+    finalResult.forEach((element, index) => {
+      showDefinition.push(false);
+      if (index === 0) {
+        resultString = `${resultString} ${element.name}`;
+      } else {
+        resultString = `${resultString} or you have ${element.name}`;
+      }
+    });
+    this.setState({ showDefinition });
+    return resultString;
+  };
   // find next question to display to user
   handleQuestionsAnswering = () => {
     console.log("in handleQuestionsAnswering ");
 
-    const { questions, currentQuestionIndex, endOfQuestions } = this.state;
+    const {
+      questions,
+      currentQuestionIndex,
+      endOfQuestions,
+      answers
+    } = this.state;
     // console.log(questions);
     if (questions.length && questions.length !== currentQuestionIndex) {
       let currentQuestion = questions[currentQuestionIndex];
       // this.setState({ questionLoading: true });
       console.log(currentQuestion);
       // call text to speech api
-      let data = { text: currentQuestion };
+      let data = { text: currentQuestion.ask };
       // call text-to-speech api
       fetch(textToSpeechUrl, {
         headers: {
@@ -378,31 +420,28 @@ class MedicalAssistantPage extends React.Component {
           alert("error please try again");
         });
     }
-    if (currentQuestionIndex === questions.length && !endOfQuestions) {
-      // end of first phase of  questions
-      // call api to get second phase of questions
-      let res = ["Are you good", "Are you slow", "Are you fast"];
-      this.setState(
-        {
-          questions: res,
-          answers: [],
-          currentQuestionIndex: 0,
-          endOfQuestions: true
-        },
-        () => {
-          this.handleQuestionsAnswering();
-        }
-      );
-    }
-    if (currentQuestionIndex === questions.length && endOfQuestions) {
+    // if (currentQuestionIndex === questions.length && !endOfQuestions) {
+    //   // end of first phase of  questions
+    //   // call api to get second phase of questions
+    //   let res = ["Are you good", "Are you slow", "Are you fast"];
+    //   this.setState(
+    //     {
+    //       questions: res,
+    //       answers: [],
+    //       currentQuestionIndex: 0,
+    //       endOfQuestions: true
+    //     },
+    //     () => {
+    //       this.handleQuestionsAnswering();
+    //     }
+    //   );
+    // }
+    // if (currentQuestionIndex === questions.length && endOfQuestions)
+    if (currentQuestionIndex === questions.length) {
       // end of questions
       // call api to find final result
-      let res = "You have coldflu";
-      this.setState({ finalResult: res });
-      // call text to speech api
-      let data = { text: res };
-      // call text-to-speech api
-      fetch(textToSpeechUrl, {
+      let data = { symptoms: answers };
+      fetch(medicalResultUr, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
@@ -412,23 +451,85 @@ class MedicalAssistantPage extends React.Component {
       })
         .then(res => res.json())
         .then(res => {
-          this.setState({
-            finalResultSound: res.data,
-            questionLoading: false,
-            viewQuestions: false
-          });
-          this.sound("data:audio/wav;base64," + res.data);
+          this.setState({ finalResult: res });
+          // call text to speech api
+          data = { text: this.handleFinalResultSpeech(res) };
+          // call text-to-speech api
+          fetch(textToSpeechUrl, {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(data)
+          })
+            .then(res => res.json())
+            .then(res => {
+              this.setState({
+                finalResultSound: res.data,
+                questionLoading: false,
+                viewQuestions: false
+              });
+              this.sound("data:audio/wav;base64," + res.data);
+            })
+            .catch(err => {
+              // error from text to speech api
+              this.setState({
+                questionLoading: false,
+                questionSound: "",
+                canStartAnswerButton: true
+              });
+              alert("error please try again");
+            });
         })
-        .catch(err => {
-          // error from text to speech api
-          this.setState({
-            questionLoading: false,
-            questionSound: "",
-            canStartAnswerButton: true
-          });
-          alert("error please try again");
-        });
+        .catch(err => console.log(err));
+
+      // let res = "You have coldflu";
     }
+  };
+
+  handleFinalResultView = () => {
+    const { finalResult, finalResultSound, showDefinition } = this.state;
+    const result = finalResult.map((item, index) => {
+      // showDefinition.push(false);
+      if (index === 0) {
+        return (
+          <div>
+            <h4 style={this.headingStyle}>
+              You have
+              {item.name}
+              <Button
+                variant="success"
+                style={{ marginLeft: 5 }}
+                size="sm"
+                onClick={() => {
+                  this.sound("data:audio/wav;base64," + finalResultSound);
+                }}
+              >
+                hear again
+              </Button>
+            </h4>
+            <ToggleButton
+              text={item.def}
+              youtubeUrl={item.refs.youtube}
+              wikiUrl={item.refs.wikipedia}
+            />
+          </div>
+        );
+      }
+      return (
+        <div style={{ marginTop: 5 }}>
+          <h4 style={this.headingStyle}>or you have {item.name}</h4>
+          <ToggleButton
+            text={item.def}
+            youtubeUrl={item.refs.youtube}
+            wikiUrl={item.refs.wikipedia}
+          />
+        </div>
+      );
+    });
+
+    return result;
   };
 
   handleQuestionView = () => {
@@ -456,7 +557,7 @@ class MedicalAssistantPage extends React.Component {
           return (
             <div>
               <h4 style={this.headingStyle}>
-                {currentQuestion}{" "}
+                {currentQuestion.ask}{" "}
                 <Button
                   size="sm"
                   onClick={() => {
@@ -496,23 +597,7 @@ class MedicalAssistantPage extends React.Component {
       }
     }
     if (finalResult && finalResultSound) {
-      return (
-        <div>
-          <h4 style={this.headingStyle}>
-            {finalResult}
-            <Button
-              variant="success"
-              style={{ marginLeft: 5 }}
-              size="sm"
-              onClick={() => {
-                this.sound("data:audio/wav;base64," + finalResultSound);
-              }}
-            >
-              hear again
-            </Button>
-          </h4>
-        </div>
-      );
+      return <div>{this.handleFinalResultView()}</div>;
     }
   };
   render() {

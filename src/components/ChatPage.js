@@ -8,6 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Loading from "./Loading";
 import { textToSpeechUrl, speechToTextUrl, chatBotUrl } from "../api/localhost";
+import robotImg from "../images/robot2.png";
 // import "./ChatPage.css";
 
 class ChatPage extends React.Component {
@@ -140,9 +141,10 @@ class ChatPage extends React.Component {
               .then(res => res.json())
               .then(res => {
                 console.log(res);
-                const result =
-                  res.results[0].lexicalEntries[0].entries[0].senses[0]
-                    .definitions[0];
+                // const result =
+                //   res.results[0].lexicalEntries[0].entries[0].senses[0]
+                //     .definitions[0];
+                const result = res.data;
                 console.log("chatbot result :", result);
 
                 this.setState({ chatSpeech: result });
@@ -254,10 +256,10 @@ class ChatPage extends React.Component {
               style={{ padding: 3, marginTop: 5, marginBottom: 5 }}
             >
               <Row>
-                <Col md="1">
+                <Col md="2">
                   <h4>You :</h4>
                 </Col>
-                <Col md="11" style={{ marginTop: 5, marginLeft: "-30px" }}>
+                <Col md="10" style={{ marginTop: 5, marginLeft: "-60px" }}>
                   <Loading />
                 </Col>
               </Row>
@@ -273,10 +275,10 @@ class ChatPage extends React.Component {
               style={{ padding: 3, marginTop: 5, marginBottom: 5 }}
             >
               <Row>
-                <Col md="1">
+                <Col md="2">
                   <h4>You :</h4>
                 </Col>
-                <Col md="11" style={{ marginLeft: "-30px", marginTop: 5 }}>
+                <Col md="10" style={{ marginLeft: "-60px", marginTop: 5 }}>
                   {obj.clientSpeech}
                 </Col>
               </Row>
@@ -289,10 +291,10 @@ class ChatPage extends React.Component {
           return (
             <Alert key={`${index}`} variant="success" style={{ padding: 3 }}>
               <Row>
-                <Col md="1">
+                <Col md="2">
                   <h4>TAU :</h4>
                 </Col>
-                <Col md="11" style={{ marginTop: 5, marginLeft: "-30px" }}>
+                <Col md="10" style={{ marginTop: 5, marginLeft: "-55px" }}>
                   <Loading />
                 </Col>
               </Row>
@@ -303,10 +305,10 @@ class ChatPage extends React.Component {
           return (
             <Alert key={`${index}-`} variant="success" style={{ padding: 3 }}>
               <Row>
-                <Col md="1">
+                <Col md="2">
                   <h4>TAU :</h4>
                 </Col>
-                <Col md="11" style={{ marginLeft: "-30px", marginTop: 3 }}>
+                <Col md="10" style={{ marginLeft: "-55px", marginTop: 3 }}>
                   {obj.chatSpeech}
                   <Button
                     style={{ marginLeft: 10 }}
@@ -333,37 +335,45 @@ class ChatPage extends React.Component {
 
     // console.log(allChatArray);
     return (
-      <div style={{ marginTop: 5, overflow: "hidden" }}>
-        <div className="text-center">
-          {!isRecording ? (
-            <Button
-              disabled={!canStartButton}
-              variant="primary"
-              onClick={this.start}
-            >
-              start <FontAwesomeIcon icon={faMicrophone} size="lg" />
-            </Button>
-          ) : (
-            <Button variant="secondary" onClick={this.stop}>
-              stop <FontAwesomeIcon icon={faMicrophoneSlash} size="lg" />
-            </Button>
-          )}
-        </div>
-        {/* <div>{this.clientSpeech()}</div>
+      <Row style={{ marginTop: 5, overflow: "hidden" }}>
+        <Col md="2">
+          <img src={robotImg} style={{ width: "100%" }} />
+        </Col>
+        <Col md="8">
+          <div className="text-center">
+            {!isRecording ? (
+              <Button
+                disabled={!canStartButton}
+                variant="primary"
+                onClick={this.start}
+              >
+                start <FontAwesomeIcon icon={faMicrophone} size="lg" />
+              </Button>
+            ) : (
+              <Button variant="secondary" onClick={this.stop}>
+                stop <FontAwesomeIcon icon={faMicrophoneSlash} size="lg" />
+              </Button>
+            )}
+          </div>
+          {/* <div>{this.clientSpeech()}</div>
         <div>{this.chatSpeech()}</div> */}
-        <div
-          id="view"
-          style={{
-            overflowY: "auto",
-            overflowX: "hidden",
-            height: "400px",
-            width: "100%",
-            paddingRight: "28px"
-          }}
-        >
-          {this.handleView()}
-        </div>
-      </div>
+          <div
+            id="view"
+            style={{
+              overflowY: "auto",
+              overflowX: "hidden",
+              height: "400px",
+              width: "100%",
+              paddingRight: "28px"
+            }}
+          >
+            {this.handleView()}
+          </div>
+        </Col>
+        <Col md="2">
+          <img src={robotImg} style={{ width: "100%" }} />
+        </Col>
+      </Row>
     );
   }
 }

@@ -29,6 +29,7 @@ class ImageForm extends React.Component {
   }
 
   OnFormSubmit = e => {
+    const { endpoint } = this.props;
     e.preventDefault();
     this.setState({ resultLoading: true });
     const { imageFile } = this.state;
@@ -51,7 +52,9 @@ class ImageForm extends React.Component {
             uploadStatus: true,
             imageFile: null,
             resultLoading: false,
-            finalResult: response.text
+            finalResult:
+              endpoint === "skin" ? response.text : response.text.slice(2, -2)
+            // finalResult: response.text
           });
           // for handling not uploading the same image each time into the form
           // document.getElementById("ResetBtn").click();

@@ -3,11 +3,11 @@
 const apiEndPoints = {
   textToSpeechUrl: "http://127.0.0.1:8000/api/speech",
   speechToTextUrl: "http://127.0.0.1:9000/api/record",
-  chatBotUrl: "http://635a28a1.ngrok.io/api/speech",
-  chestUrl: "https://8de759f3.ngrok.io/api/chest",
-  skinUrl: "https://182334d1.ngrok.io/api/skin",
-  bodyPartUrl: "http://283d6e89.ngrok.io/api/part",
-  medicalResultUr: "http://283d6e89.ngrok.io//api/answer"
+  chatBotUrl: "https://2f4cdb7a.ngrok.io/api/chatbot",
+  chestUrl: "https://c0d31cdc.ngrok.io/api/chest",
+  skinUrl: "https://b6779b03.ngrok.io/api/skin",
+  bodyPartUrl: "http://e119a7c6.ngrok.io/api/part",
+  medicalResultUr: "http://e119a7c6.ngrok.io/api/answer"
 };
 
 // ngrok

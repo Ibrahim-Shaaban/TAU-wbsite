@@ -13,7 +13,7 @@ import {
   bodyPartUrl,
   medicalResultUr
 } from "../api/localhost";
-import bodyImage from "../images/body.png";
+import bodyImage from "../images/body1.png";
 import ToggleButton from "./ToggleButton";
 
 class MedicalAssistantPage extends React.Component {
@@ -616,7 +616,16 @@ class MedicalAssistantPage extends React.Component {
             alt="body_image"
           />
         </Col>
-        <Col md="8">
+        <Col
+          md="8"
+          style={{
+            position: "absolute",
+            top: "25%",
+            right: "25%",
+            left: "25%",
+            bottom: "25%"
+          }}
+        >
           <div className="text-center">
             {!isRecording ? (
               <Button
@@ -624,7 +633,7 @@ class MedicalAssistantPage extends React.Component {
                 variant="primary"
                 onClick={this.start}
               >
-                start <FontAwesomeIcon icon={faMicrophone} size="lg" />
+                Say a part of your body <FontAwesomeIcon icon={faMicrophone} size="lg" />
               </Button>
             ) : (
               <Button variant="secondary" onClick={this.stop}>

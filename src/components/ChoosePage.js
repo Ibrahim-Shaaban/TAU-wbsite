@@ -22,7 +22,7 @@ class ChoosePage extends React.Component {
       clientSpeech: "",
       clientSpeechLoading: false,
       canListenToAnswer: false,
-      chatSpeech: "Please choose cahtbot page or medical assistant page",
+      chatSpeech: "Please choose chatbot page or medical assistant page",
       chatSound: "",
       chatLoading: true, // for loading
       canStartButton: true

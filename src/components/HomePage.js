@@ -60,7 +60,7 @@ class HomePage extends React.Component {
 
     return members.map(member => {
       return (
-        <Col md="3" style={{ marginBottom: 10 }}>
+        <Col md="3" style={{ marginBottom: 10 }} key={member.name}>
           <InformationCard info={member} />
         </Col>
       );

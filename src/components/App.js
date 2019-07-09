@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Container } from "react-bootstrap";
-import HomePage from "./HomePage";
+// import HomePage from "./ServicesOverview";
 import Header from "./Header";
 import MedicalAssistantPage from "./MedicalAssistantPage";
 import ChatPage from "./ChatPage";
@@ -12,6 +12,8 @@ import ChoosePage from "./ChoosePage";
 import Particle from "./Particle";
 import { chestUrl, skinUrl } from "../api/localhost";
 import Footer from "./Footer";
+import ServicesOverview from "./ServicesOverview";
+import HomePage from "./HomePage";
 
 class App extends React.Component {
   renderPage = () => {
@@ -19,6 +21,8 @@ class App extends React.Component {
     switch (currentPage) {
       case "home":
         return <HomePage />;
+      case "overview":
+        return <ServicesOverview />;
       case "choose":
         return <ChoosePage />;
       // return <HomePage currentPage={currentPage} />;

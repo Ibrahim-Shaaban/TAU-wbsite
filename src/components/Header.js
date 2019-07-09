@@ -2,15 +2,17 @@ import React from "react";
 import { connect } from "react-redux";
 import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { changeCurrentPage } from "../actions";
+import robotImg from "../images/robot.png";
 
 class Header extends React.Component {
   render() {
     return (
       <Navbar
+        sticky="top"
         // bg="dark"
         expand="lg"
         variant="dark"
-        style={{ backgroundColor: "#2c3045" }}
+        style={{ backgroundColor: "#2c3045", padding: 0 }}
       >
         <Navbar.Brand href="#">
           <div
@@ -20,7 +22,13 @@ class Header extends React.Component {
               this.props.changeCurrentPage("home");
             }}
           >
-            TAU
+            <img
+              src={robotImg}
+              width="70"
+              height="70"
+              className="d-inline-block align-top"
+              alt="React Bootstrap logo"
+            />
           </div>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -33,6 +41,16 @@ class Header extends React.Component {
                 }}
               >
                 Home
+              </div>
+            </Nav.Link>
+
+            <Nav.Link>
+              <div
+                onClick={e => {
+                  this.props.changeCurrentPage("overview");
+                }}
+              >
+                Services Overview
               </div>
             </Nav.Link>
             <NavDropdown title="Our Services" id="basic-nav-dropdown">

@@ -51,7 +51,7 @@ class ImageForm extends React.Component {
             uploadStatus: true,
             imageFile: null,
             resultLoading: false,
-            finalResult: response.text.slice(2, -2)
+            finalResult: response.text
           });
           // for handling not uploading the same image each time into the form
           // document.getElementById("ResetBtn").click();
@@ -111,8 +111,7 @@ class ImageForm extends React.Component {
               fontWeight: "bold",
               fontFamily: "cursive",
               color: "#f60860",
-              fontSize: "30px" ,
-              
+              fontSize: "30px"
             }}
           >
             {finalResult}

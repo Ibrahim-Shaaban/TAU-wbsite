@@ -2,7 +2,7 @@ import React from "react";
 import { Alert, Button } from "react-bootstrap";
 // import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
+// import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { faYoutube, faWikipediaW } from "@fortawesome/free-brands-svg-icons";
 
 class ToggleButton extends React.Component {

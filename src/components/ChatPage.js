@@ -139,6 +139,7 @@ class ChatPage extends React.Component {
             })
               .then(res => res.json())
               .then(res => {
+                console.log(res);
                 const result =
                   res.results[0].lexicalEntries[0].entries[0].senses[0]
                     .definitions[0];

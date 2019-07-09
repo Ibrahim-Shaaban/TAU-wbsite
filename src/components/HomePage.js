@@ -1,54 +1,97 @@
 import React from "react";
-import DispalyCard from "./DispalyCard";
-import { Row } from "react-bootstrap";
-import ToggleButton from "./ToggleButton";
-// import CardBoot from "./Card
+import { Row, Col } from "react-bootstrap";
+import Slider from "./Slider";
+import InformationCard from "./InformationCard";
+import personImage from "../team_members/ibra.png";
+import hatemImg from "../team_members/hatem2.png";
+import makerImg from "../team_members/maker2.png";
+import hananImg from "../team_members/hanan.png";
+import rehabImg from "../team_members/rehab.png";
 
 class HomePage extends React.Component {
-  render() {
-    const medicalPageData = {
-      page: "medical",
-      title: "Medical Assistant ",
-      image: "https://certifiedsource.com/wp-content/uploads/2018/06/ME1.jpg",
-      text: [
-        "This service represents a questioning system that ask client about what he feels of symptoms to come up with a simple diagnosis of his condition by giving some probabilities of him having some specific diseases and that is achieved by First, the client specify the body region that his symptoms occur mostly Next, the system starts to ask him specific questions about that region where the client answer by confirming having the symptoms or declining having them Finally, after several questions the system displays a list of diseases that the client may have with some probability."
-      ]
-    };
-    const xrayPageData = {
-      page: "xRay",
-      title: "Chest X-Ray Image Diagnosis ",
-      image:
-        "https://xranm.com/wp-content/uploads/2014/08/doc-holding-xray-2.jpg",
-      text: [
-        "This service represents an elementary diagnosis of a patient's Chest X-Ray medical imaging where he interacts with the page through a form which consists of two buttons one to upload a photo describes his X-Ray imaging and the other is to submit it to be analysed noindent A modest analysis is displayed to the client describing the diagnosis of his chest X-Ray imaging and some information about the disease related to it for example: pneumonia or pneumothorax."
-      ]
-    };
-    const chatPageData = {
-      page: "chat",
-      title: "Chat with Baymax ^_^ ",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXNEjtdVptPJ2-Da34VAnt5LVsVGxQVVMDgf_KNVFZmHW16-X_",
-      text: [
-        "This service represents an AI agent that the client can talk to and make a conversation with it and that is achieved through First, pressing a button to request a voice record Next, using client's microphone to record voice Then, pressing button to stop recording After That, the page displays text that represents what was spoken inside that recording Finally, chat bot model's reply in text is shown to the client and he can hear it too."
-      ]
-    };
-    const skinPageData = {
-      page: "skin",
-      title: "Skin Cancer Image Diagnosis ",
-      image:
-        "https://news-media.stanford.edu/wp-content/uploads/2017/01/24124237/dermatology_sub.jpg",
-      text: [
-        "This service too represents an elementary diagnosis of a patient's Skin cancer status if existed where he interacts with the page through a form which consists of two buttons one to upload a photo describes his skin condition in some area and the other is to submit it to be analysed. A modest analysis is displayed to the client describing the diagnosis of his skin cancer status and some information about the type of skin cancer he have for example: Nevus or Melanoma or Seborrheic Keratoses."
-      ]
-    };
+  handleTeamMembersView = () => {
+    const members = [
+      {
+        imgUrl: hatemImg,
+        name: "Hatem Zamzam",
+        jobTitle: "Deep Learning Researcher",
+        facebookUrl: "https://www.facebook.com/",
+        twitterUrl: "https://twitter.com/",
+        githubUrl: "https://github.com/",
+        linkedinUrl: "https://www.linkedin.com/feed/"
+      },
+      {
+        imgUrl: hananImg,
+        name: "Hanan Bahy",
+        jobTitle: "Deep Learning Researcher",
+        facebookUrl: "https://www.facebook.com/",
+        twitterUrl: "https://twitter.com/",
+        githubUrl: "https://github.com/",
+        linkedinUrl: "https://www.linkedin.com/feed/"
+      },
+      {
+        imgUrl: makerImg,
+        name: "Mostafa Kamal",
+        jobTitle: "Data Scientist",
+        facebookUrl: "https://www.facebook.com/",
+        twitterUrl: "https://twitter.com/",
+        githubUrl: "https://github.com/",
+        linkedinUrl: "https://www.linkedin.com/feed/"
+      },
+      {
+        imgUrl: rehabImg,
+        name: "Rehab Reda",
+        jobTitle: "Deep learning Researcher",
+        facebookUrl: "https://www.facebook.com/",
+        twitterUrl: "https://twitter.com/",
+        githubUrl: "https://github.com/",
+        linkedinUrl: "https://www.linkedin.com/feed/"
+      },
+      {
+        imgUrl: personImage,
+        name: "Ibrahim Shaaban",
+        jobTitle: "Full Stack Developer",
+        facebookUrl: "https://www.facebook.com/",
+        twitterUrl: "https://twitter.com/",
+        githubUrl: "https://github.com/",
+        linkedinUrl: "https://www.linkedin.com/feed/"
+      }
+    ];
 
+    return members.map(member => {
+      return (
+        <Col md="3" style={{ marginBottom: 10 }}>
+          <InformationCard info={member} />
+        </Col>
+      );
+    });
+  };
+
+  render() {
     return (
-      <Row className="m-4">
-        <DispalyCard reverse={false} data={medicalPageData} />
-        <DispalyCard reverse={true} data={chatPageData} />
-        <DispalyCard reverse={false} data={xrayPageData} />
-        <DispalyCard reverse={true} data={skinPageData} />
-      </Row>
+      <div style={{ color: "white" }}>
+        <Row>
+          <Col md="12" className="text-center" style={{ marginBottom: "10px" }}>
+            <h2>Ai HealthCare Assistant Using Deep Learning</h2>
+          </Col>
+
+          <Col md="8" className="m-auto">
+            <Slider />
+          </Col>
+
+          <Col
+            md="12"
+            className="text-center"
+            style={{ marginBottom: 5, marginTop: 10 }}
+          >
+            <h2>Team Members</h2>
+          </Col>
+
+          <Row style={{ justifyContent: "center" }}>
+            {this.handleTeamMembersView()}
+          </Row>
+        </Row>
+      </div>
     );
   }
 }

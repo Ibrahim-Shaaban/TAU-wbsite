@@ -14,6 +14,7 @@ import { chestUrl, skinUrl } from "../api/localhost";
 import Footer from "./Footer";
 import ServicesOverview from "./ServicesOverview";
 import HomePage from "./HomePage";
+import MedicalQuestions from "./MedicalQuestions";
 
 class App extends React.Component {
   renderPage = () => {
@@ -30,6 +31,9 @@ class App extends React.Component {
         return <MedicalAssistantPage />;
       case "chat":
         return <ChatPage />;
+
+      case "medicalQuestions":
+        return <MedicalQuestions />;
       case "xRay":
         return <ImageForm url={chestUrl} endpoint="chest" />;
       // return <XRayPage />;

@@ -129,7 +129,8 @@ class ChatPage extends React.Component {
               chatState: "loading",
               clientSpeechLoading: false
             });
-            // call chatbot api
+
+            //call chatbot api
             fetch(chatBotUrl, {
               headers: {
                 Accept: "application/json",
@@ -144,6 +145,7 @@ class ChatPage extends React.Component {
                 // const result =
                 //   res.results[0].lexicalEntries[0].entries[0].senses[0]
                 //     .definitions[0];
+                // start
                 const result = res.data;
                 console.log("chatbot result :", result);
 
@@ -228,6 +230,7 @@ class ChatPage extends React.Component {
                     this.sound("data:audio/wav;base64," + res.data);
                   });
               });
+            //end
           }
           if (res.error === "1") {
             // error in speech to text api

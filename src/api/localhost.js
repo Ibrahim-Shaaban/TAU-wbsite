@@ -12,13 +12,13 @@ const apiEndPoints = {
 
 // ngrok
 const apiUrls = {
-  textToSpeechUrl: "https://a9c481d2.ngrok.io/api/speech",
-  speechToTextUrl: "https://8f074f7b.ngrok.io/api/record",
-  chatBotUrl: "http://127.0.0.1:7000/api/chatbot",
-  chestUrl: "http://127.0.0.1:5001/api/chest",
-  skinUrl: "http://127.0.0.1:5001/api/skin",
-  bodyPartUrl: "https://6c565021.ngrok.io/api/part",
-  medicalResultUr: "https://6c565021.ngrok.io/api/answer"
+  textToSpeechUrl: "https://cc71c1ec.ngrok.io/api/tts",
+  speechToTextUrl: "https://cc71c1ec.ngrok.io/api/sr",
+  chatBotUrl: "https://8bab01ff.ngrok.io/api/chatbot",
+  chestUrl: "https://c0d31cdc.ngrok.io/api/chest",
+  skinUrl: "https://b6779b03.ngrok.io/api/skin",
+  bodyPartUrl: "http://e119a7c6.ngrok.io/api/part",
+  medicalResultUr: "http://e119a7c6.ngrok.io/api/answer"
 };
 
 module.exports = apiEndPoints;

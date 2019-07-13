@@ -26,7 +26,14 @@ class MedicalQuestions extends React.Component {
       chatSound: "",
       chatSoundArray: [],
       chatLoading: false, // for loading
-      canStartButton: true
+      canStartButton: true,
+      allQuestions: [],
+      currentDiseaseIndex: 0,
+      currentQuestionAnswerIndex: 0,
+      canViewQuestion: false,
+      canViewDisease: false,
+      disableNoForDisease: false,
+      disableNoForQuestion: false
     };
     this.audioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
@@ -60,7 +67,12 @@ class MedicalQuestions extends React.Component {
         chatSpeech: "",
         chatSound: "",
         chatSpeechArray: [],
-        chatSoundArray: []
+        chatSoundArray: [],
+        allQuestions: [],
+        currentDiseaseIndex: 0,
+        currentQuestionAnswerIndex: 0,
+        canViewQuestion: false,
+        canViewDisease: false
       })
     );
   };
@@ -125,58 +137,69 @@ class MedicalQuestions extends React.Component {
         .then(res => res.json())
         .then(res => {
           if (res.error === "0") {
-            console.log("client said : ", res);
+            console.log("client said : ", res.text);
+
+            // fetch api to get all possible diseases
+            let response = [
+              {
+                name: "fever",
+                questions: [
+                  "what is fever",
+                  "is fever is good",
+                  "is fever is bad"
+                ],
+                answers: [
+                  `answer to what is fever  : Fever is when a human's body temperature goes above the normal range of 36–37° Centigrade (98–100° Fahrenheit). It is a common medical sign. People's normal body temperatures may vary and are affected by factors such as eating, exercise, sleeping, and what time of the day it is. Our body temperature is usually at its highest at around 6 p.m. and at its lowest at about 3 a.m. Other terms for a fever include pyrexia and controlled hyperthermia. As the body temperature goes up, the person may feel cold until it levels off and stops rising.`,
+                  `answer to is fever is good  : Fever is when a human's body temperature goes above the normal range of 36–37° Centigrade (98–100° Fahrenheit). It is a common medical sign. People's normal body temperatures may vary and are affected by factors such as eating, exercise, sleeping, and what time of the day it is. Our body temperature is usually at its highest at around 6 p.m. and at its lowest at about 3 a.m. Other terms for a fever include pyrexia and controlled hyperthermia. As the body temperature goes up, the person may feel cold until it levels off and stops rising.`,
+                  `answer to is fever is bad  : Fever is when a human's body temperature goes above the normal range of 36–37° Centigrade (98–100° Fahrenheit). It is a common medical sign. People's normal body temperatures may vary and are affected by factors such as eating, exercise, sleeping, and what time of the day it is. Our body temperature is usually at its highest at around 6 p.m. and at its lowest at about 3 a.m. Other terms for a fever include pyrexia and controlled hyperthermia. As the body temperature goes up, the person may feel cold until it levels off and stops rising.`
+                ]
+              },
+              {
+                name: "front-end and back-end",
+                questions: [
+                  "what is front-end and back-end",
+                  "is cold is front-end and back-end",
+                  "is cold is front-end and back-end"
+                ],
+                answers: [
+                  `answer to what is front-end and back-end  : Front end and back end are terms used by programmers and computer professionals to describe the layers that make up hardware, a computer program or a website which are delineated based on how accessible they are to a user. In this context, the user refers to an entity that could be human or digital. The back end refers to parts of a computer application or a program's code that allow it to operate and that cannot be accessed by a user. Most data and operating syntax are stored and accessed in the back end of a computer system. Typically the code is comprised of one or more programming languages. The back end is also called the data access layer of software or hardware and includes any functionality that needs to be accessed and navigated to by digital means.`,
+                  `answer to is front-end and back-end is good  : Front end and back end are terms used by programmers and computer professionals to describe the layers that make up hardware, a computer program or a website which are delineated based on how accessible they are to a user. In this context, the user refers to an entity that could be human or digital. The back end refers to parts of a computer application or a program's code that allow it to operate and that cannot be accessed by a user. Most data and operating syntax are stored and accessed in the back end of a computer system. Typically the code is comprised of one or more programming languages. The back end is also called the data access layer of software or hardware and includes any functionality that needs to be accessed and navigated to by digital means.`,
+                  `answer to are front-end and back-end bad  : Front end and back end are terms used by programmers and computer professionals to describe the layers that make up hardware, a computer program or a website which are delineated based on how accessible they are to a user. In this context, the user refers to an entity that could be human or digital. The back end refers to parts of a computer application or a program's code that allow it to operate and that cannot be accessed by a user. Most data and operating syntax are stored and accessed in the back end of a computer system. Typically the code is comprised of one or more programming languages. The back end is also called the data access layer of software or hardware and includes any functionality that needs to be accessed and navigated to by digital means.`
+                ]
+              },
+              {
+                name: "cancer",
+                questions: [
+                  "what is cancer",
+                  "is cancer is good",
+                  "is cancer is bad"
+                ],
+                answers: [
+                  `answer to what is cancer  : Cells are the basic units that make up the human body. Cells grow and divide to make new cells as the body needs them. Usually, cells die when they get too old or damaged. Then, new cells take their place. Cancer begins when genetic changes interfere with this orderly process. Cells start to grow uncontrollably. These cells may form a mass called a tumor. A tumor can be cancerous or benign. A cancerous tumor is malignant, meaning it can grow and spread to other parts of the body. A benign tumor means the tumor can grow but will not spread. Some types of cancer do not form a tumor. These include leukemias, most types of lymphoma, and myeloma.`,
+                  `answer to is cancer is good  : Cells are the basic units that make up the human body. Cells grow and divide to make new cells as the body needs them. Usually, cells die when they get too old or damaged. Then, new cells take their place. Cancer begins when genetic changes interfere with this orderly process. Cells start to grow uncontrollably. These cells may form a mass called a tumor. A tumor can be cancerous or benign. A cancerous tumor is malignant, meaning it can grow and spread to other parts of the body. A benign tumor means the tumor can grow but will not spread. Some types of cancer do not form a tumor. These include leukemias, most types of lymphoma, and myeloma.`,
+                  `answer to is cancer is bad  : Cells are the basic units that make up the human body. Cells grow and divide to make new cells as the body needs them. Usually, cells die when they get too old or damaged. Then, new cells take their place. Cancer begins when genetic changes interfere with this orderly process. Cells start to grow uncontrollably. These cells may form a mass called a tumor. A tumor can be cancerous or benign. A cancerous tumor is malignant, meaning it can grow and spread to other parts of the body. A benign tumor means the tumor can grow but will not spread. Some types of cancer do not form a tumor. These include leukemias, most types of lymphoma, and myeloma.`
+                ]
+              }
+            ];
             this.setState({
-              clientSpeech: res.text,
-              clientSpeechLoading: false,
-              chatLoading: true
+              allQuestions: response,
+              canViewDisease: true,
+              clientSpeechLoading: false
             });
+            // this.setState({
+            //   clientSpeech: res.text,
+            //   clientSpeechLoading: false,
+            //   chatLoading: true
+            // });
 
             // call entity api to get answer of question
-            let response =
-              "Cells are the basic units that make up the human body. Cells grow and divide to make new cells as the body needs them. Usually, cells die when they get too old or damaged. Then, new cells take their place.Cancer begins when genetic changes interfere with this orderly process. Cells start to grow uncontrollably. These cells may form a mass called a tumor. A tumor can be cancerous or benign. A cancerous tumor is malignant, meaning it can grow and spread to other parts of the body. A benign tumor means the tumor can grow but will not spread. Some types of cancer do not form a tumor. These include leukemias, most types of lymphoma, and myeloma.";
-            // let response = "hello from the other world";
-            let splittedResponse = this.splitResponse(response, 15);
-            this.setState({
-              chatSpeech: response,
-              chatSpeechArray: splittedResponse
-            });
-            // loop for splitted response to fetch sound of each them
-            splittedResponse.forEach((response, index) => {
-              let data = { text: response, index };
-              console.log(data);
-              // call text-to-speech api
-              fetch(textToSpeechUrl, {
-                headers: {
-                  Accept: "application/json",
-                  "Content-Type": "application/json"
-                },
-                method: "POST",
-                body: JSON.stringify(data)
-              })
-                .then(res => res.json())
-                .then(res => {
-                  const { chatSoundArray } = this.state;
-                  chatSoundArray.push({
-                    data: res.data,
-                    index: res.index === undefined ? 0 : res.index
-                  });
-                  // this.sound("data:audio/wav;base64," + res.data);
-                  if (chatSoundArray.length === splittedResponse.length) {
-                    this.setState({
-                      chatLoading: false,
-                      chatSoundArray: chatSoundArray.sort((a, b) =>
-                        a.index > b.index ? 1 : b.index > a.index ? -1 : 0
-                      )
-                    });
-                  } else {
-                    this.setState({
-                      chatSoundArray
-                    });
-                  }
-                  // this.sound("data:audio/wav;base64," + res.data);
-                });
-            });
+            // let response =
+            //   "Front end and back end are terms used by programmers and computer professionals to describe the layers that make up hardware, a computer program or a website which are delineated based on how accessible they are to a user. In this context, the user refers to an entity that could be human or digital. The back end refers to parts of a computer application or a program's code that allow it to operate and that cannot be accessed by a user. Most data and operating syntax are stored and accessed in the back end of a computer system. Typically the code is comprised of one or more programming languages. The back end is also called the data access layer of software or hardware and includes any functionality that needs to be accessed and navigated to by digital means.";
+
+            // let response =
+            //   "Cells are the basic units that make up the human body. Cells grow and divide to make new cells as the body needs them. Usually, cells die when they get too old or damaged. Then, new cells take their place. Cancer begins when genetic changes interfere with this orderly process. Cells start to grow uncontrollably. These cells may form a mass called a tumor. A tumor can be cancerous or benign. A cancerous tumor is malignant, meaning it can grow and spread to other parts of the body. A benign tumor means the tumor can grow but will not spread. Some types of cancer do not form a tumor. These include leukemias, most types of lymphoma, and myeloma.";
+            // let response =
+            //   "Love is one of the most profound emotions we experience as humans. It’s bigger than us, meaning, though we can invite it into our lives, we do not have the control over the how, when and where love starts to express itself. Maybe that’s why 72% of people believe in love at first sight. Sometimes, love truly does strike like a bolt of lightening to the chest, and you aren’t prepared for it Since love is inherently free, we spend nights tossing and turning in an attempt to understand what it is, and how to know if we have it. How do you define something so uncontrollable and versatile? That’s the tricky thing about love, we can feel it in a variety of different states–when we’re happy, sad, angry, confused or excited–and our attitudes about love can range from affectionate love, to infatuation and pleasure. We even use love as an action, as a force to keep our relationships with partners, or friends and family, together.";
           }
           if (res.error === "1") {
             // error from speech to text api
@@ -188,66 +211,269 @@ class MedicalQuestions extends React.Component {
     });
   };
 
+  acceptDisease = () => {
+    console.log("accept disease");
+    this.setState({ canViewDisease: false, canViewQuestion: true });
+  };
+
+  refuseDisease = () => {
+    console.log("client refuses disease ");
+    const { currentDiseaseIndex, allQuestions } = this.state;
+    if (currentDiseaseIndex + 2 === allQuestions.length) {
+      this.setState({ disableNoForDisease: true });
+    }
+    this.setState({ currentDiseaseIndex: currentDiseaseIndex + 1 });
+  };
+
+  acceptQuestion = () => {
+    console.log("accept question");
+    this.setState({ canViewQuestion: false, chatLoading: true });
+    const {
+      currentDiseaseIndex,
+      currentQuestionAnswerIndex,
+      allQuestions
+    } = this.state;
+    const cuurentAnsewer =
+      allQuestions[currentDiseaseIndex].answers[currentQuestionAnswerIndex];
+    let splittedResponse = this.splitResponse(cuurentAnsewer, 20);
+    this.setState({
+      chatSpeech: cuurentAnsewer,
+      chatSpeechArray: splittedResponse
+    });
+    // loop for splitted response to fetch sound of each them
+    splittedResponse.forEach((response, index) => {
+      let data = { text: response, index };
+      console.log(data);
+      // call text-to-speech api
+      fetch(textToSpeechUrl, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify(data)
+      })
+        .then(res => res.json())
+        .then(res => {
+          const { chatSoundArray } = this.state;
+          chatSoundArray.push({
+            data: res.data,
+            index: res.index === undefined ? 0 : res.index
+          });
+          // this.sound("data:audio/wav;base64," + res.data);
+          if (chatSoundArray.length === splittedResponse.length) {
+            this.setState({
+              chatLoading: false,
+              chatSoundArray: chatSoundArray.sort((a, b) =>
+                a.index > b.index ? 1 : b.index > a.index ? -1 : 0
+              )
+            });
+          } else {
+            this.setState({
+              chatSoundArray
+            });
+          }
+          // this.sound("data:audio/wav;base64," + res.data);
+        });
+    });
+  };
+
+  refuseQuestion = () => {
+    console.log("refuse question");
+    const {
+      currentQuestionAnswerIndex,
+      allQuestions,
+      currentDiseaseIndex
+    } = this.state;
+    if (
+      currentQuestionAnswerIndex + 2 ===
+      allQuestions[currentDiseaseIndex].questions.length
+    ) {
+      console.log("currentQuestionAnswerIndex", currentQuestionAnswerIndex + 2);
+      console.log(
+        "length of questions : ",
+        allQuestions[currentDiseaseIndex].questions.length
+      );
+      this.setState({ disableNoForQuestion: true });
+    }
+    this.setState({
+      currentQuestionAnswerIndex: currentQuestionAnswerIndex + 1
+    });
+  };
+
   handleAnswerView = () => {
     const {
       chatLoading,
       chatSpeech,
       chatSoundArray,
-      chatSpeechArray
+      chatSpeechArray,
+      allQuestions,
+      currentDiseaseIndex,
+      currentQuestionAnswerIndex
     } = this.state;
+    
     if (chatLoading) {
-      return <Loading size="large" />;
-    }
-
-    if (chatSoundArray.length === chatSpeechArray.length && chatSpeech) {
-      return (
-        <div style={{ color: "white" }}>
-          <h4>
-            {chatSpeech}{" "}
-            <Button
-              style={{ marginLeft: 7 }}
-              variant="success"
-              size="sm"
-              onClick={() => {
-                // console.log(chatSound);
-                // let finalSound = chatSound.join();
-                this.playSound(
-                  0,
-                  chatSoundArray.sort((a, b) =>
-                    a.index > b.index ? 1 : b.index > a.index ? -1 : 0
-                  )
-                );
-              }}
-            >
-              hear again
-            </Button>
-          </h4>
-        </div>
-      );
-    }
-  };
-
-  handelClientSpeech = () => {
-    const { clientSpeech, clientSpeechLoading } = this.state;
-    if (clientSpeechLoading) {
-      return <Loading size="large" />;
-    }
-    if (clientSpeech) {
+      const currentQuestion =
+      allQuestions[currentDiseaseIndex].questions[currentQuestionAnswerIndex];
       return (
         <div>
-          <h4>
+          <h4 style={{ marginBottom: 10 }}>
             <span
               style={{
-                color: "#1086ff",
+                color: "#F40064",
                 fontWeight: "bold",
                 fontStyle: "italic",
                 fontSize: "30px"
               }}
             >
-              {clientSpeech} ?
+            {currentQuestion} {""} ?
+            </span>
+          </h4>
+          <Loading size="large" />
+        </div>
+      );
+    }
+
+    if (chatSoundArray.length === chatSpeechArray.length && chatSpeech) {
+      const currentQuestion =
+      allQuestions[currentDiseaseIndex].questions[currentQuestionAnswerIndex];
+      return (
+        <div>
+          <h4 style={{ marginBottom: 10 }}>
+            <span
+              style={{
+                color: "#F40064",
+                fontWeight: "bold",
+                fontStyle: "italic",
+                fontSize: "30px"
+              }}
+            >
+            {currentQuestion} {""} ?
+            </span>
+          </h4>
+          <div
+            style={{
+              color: "white",
+              border: "1px solid white",
+              borderRadius: "15px",
+              padding: "10px"
+            }}
+          >
+            <h4>
+              {chatSpeech}{" "}
+              <Button
+                style={{ marginLeft: 7 }}
+                variant="success"
+                size="sm"
+                onClick={() => {
+                  // console.log(chatSound);
+                  // let finalSound = chatSound.join();
+                  console.log(chatSoundArray);
+                  this.playSound(
+                    0,
+                    chatSoundArray.sort((a, b) =>
+                      a.index > b.index ? 1 : b.index > a.index ? -1 : 0
+                    )
+                  );
+                }}
+              >
+                hear again
+              </Button>
+            </h4>
+          </div>
+        </div>
+      );
+    }
+  };
+
+  handelClientSpeechView = () => {
+    const {
+      // clientSpeech,
+      clientSpeechLoading,
+      allQuestions,
+      currentDiseaseIndex,
+      currentQuestionAnswerIndex,
+      canViewQuestion,
+      canViewDisease,
+      disableNoForDisease,
+      disableNoForQuestion
+    } = this.state;
+    if (clientSpeechLoading) {
+      return <Loading size="large" />;
+    }
+    if (canViewDisease) {
+      const currentDisease = allQuestions[currentDiseaseIndex].name;
+      return (
+        <div>
+          <h4 style={{ color: "white" }}>
+            Do you mean{" "}
+            <span
+              style={{
+                color: "#F40064",
+                fontWeight: "bold",
+                fontStyle: "italic",
+                fontSize: "30px"
+              }}
+            >
+              {currentDisease}{" "}
             </span>
             ?
           </h4>
+          <Button
+            onClick={() => {
+              this.acceptDisease();
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            style={{ marginLeft: 10 }}
+            onClick={() => {
+              this.refuseDisease();
+            }}
+            disabled={disableNoForDisease}
+          >
+            No
+          </Button>
+        </div>
+      );
+    }
+
+    if (canViewQuestion) {
+      const currentQuestion =
+        allQuestions[currentDiseaseIndex].questions[currentQuestionAnswerIndex];
+      return (
+        <div>
+          <h4 style={{ color: "white" }}>
+            Do you mean{" "}
+            <span
+              style={{
+                color: "#F40064",
+                fontWeight: "bold",
+                fontStyle: "italic",
+                fontSize: "30px"
+              }}
+            >
+              {currentQuestion}{" "}
+            </span>
+            ?
+          </h4>
+          <Button
+            onClick={() => {
+              this.acceptQuestion();
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            style={{ marginLeft: 10 }}
+            onClick={() => {
+              this.refuseQuestion();
+            }}
+            disabled={disableNoForQuestion}
+          >
+            No
+          </Button>
         </div>
       );
     }
@@ -279,7 +505,7 @@ class MedicalQuestions extends React.Component {
           </div>
 
           <Col style={{ marginTop: 10 }} className="text-center">
-            {this.handelClientSpeech()}
+            {this.handelClientSpeechView()}
           </Col>
           <Col style={{ marginTop: 10 }} className="text-center">
             {this.handleAnswerView()}

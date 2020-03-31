@@ -122,10 +122,17 @@ class ChoosePage extends React.Component {
               clientSpeech: res.text,
               clientSpeechLoading: false
             });
-            if (res.text === "chatbot") {
+            if (
+              res.text === "chatbot" ||
+              res.text === "bot" ||
+              res.text === "pot"
+            ) {
               console.log("chat bot page");
               this.props.changeCurrentPage("chat");
-            } else if (res.text === "medical assistant") {
+            } else if (
+              res.text === "medical assistant" ||
+              res.text === "medical assistance"
+            ) {
               console.log("medical assistant page");
               this.props.changeCurrentPage("medical");
             } else {
@@ -181,7 +188,7 @@ class ChoosePage extends React.Component {
                 variant="primary"
                 onClick={this.start}
               >
-                Say chatbot or medical assistant{" "}
+                Say bot or medical assistant{" "}
                 <FontAwesomeIcon icon={faMicrophone} size="lg" />
               </Button>
             ) : (

@@ -367,7 +367,7 @@ class MedicalAssistantPage extends React.Component {
     finalResult.forEach((element, index) => {
       showDefinition.push(false);
       if (index === 0) {
-        resultString = `${resultString} ${element.name}`;
+        resultString = ` ${resultString} ${element.name}`;
       } else {
         resultString = `${resultString} or you have ${element.name}`;
       }
@@ -497,7 +497,7 @@ class MedicalAssistantPage extends React.Component {
           <div>
             <h4 style={this.headingStyle}>
               You have
-              {item.name}
+              {`" "${item.name}`}
               <Button
                 variant="success"
                 style={{ marginLeft: 5 }}
@@ -633,7 +633,8 @@ class MedicalAssistantPage extends React.Component {
                 variant="primary"
                 onClick={this.start}
               >
-                Say a part of your body <FontAwesomeIcon icon={faMicrophone} size="lg" />
+                Say a part of your body{" "}
+                <FontAwesomeIcon icon={faMicrophone} size="lg" />
               </Button>
             ) : (
               <Button variant="secondary" onClick={this.stop}>

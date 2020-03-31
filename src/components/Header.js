@@ -87,7 +87,7 @@ class Header extends React.Component {
                   Skin Cancer
                 </div>
               </NavDropdown.Item>
-              <NavDropdown.Item>
+              {/* <NavDropdown.Item>
                 <div
                   onClick={() =>
                     this.props.changeCurrentPage("medicalQuestions")
@@ -95,7 +95,7 @@ class Header extends React.Component {
                 >
                   Medical Questions
                 </div>
-              </NavDropdown.Item>
+              </NavDropdown.Item> */}
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

@@ -33,8 +33,7 @@ class MedicalQuestions extends React.Component {
       canViewQuestion: false,
       canViewDisease: false,
       disableNoForDisease: false,
-      disableNoForQuestion: false,
-      askedQuestion: ""
+      disableNoForQuestion: false
     };
     this.audioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
@@ -73,8 +72,7 @@ class MedicalQuestions extends React.Component {
         currentDiseaseIndex: 0,
         currentQuestionAnswerIndex: 0,
         canViewQuestion: false,
-        canViewDisease: false,
-        askedQuestion: ""
+        canViewDisease: false
       })
     );
   };
@@ -140,7 +138,6 @@ class MedicalQuestions extends React.Component {
         .then(res => {
           if (res.error === "0") {
             console.log("client said : ", res.text);
-            this.setState({ askedQuestion: res.text });
 
             // fetch api to get all possible diseases
             let response = [
@@ -189,6 +186,20 @@ class MedicalQuestions extends React.Component {
               canViewDisease: true,
               clientSpeechLoading: false
             });
+            // this.setState({
+            //   clientSpeech: res.text,
+            //   clientSpeechLoading: false,
+            //   chatLoading: true
+            // });
+
+            // call entity api to get answer of question
+            // let response =
+            //   "Front end and back end are terms used by programmers and computer professionals to describe the layers that make up hardware, a computer program or a website which are delineated based on how accessible they are to a user. In this context, the user refers to an entity that could be human or digital. The back end refers to parts of a computer application or a program's code that allow it to operate and that cannot be accessed by a user. Most data and operating syntax are stored and accessed in the back end of a computer system. Typically the code is comprised of one or more programming languages. The back end is also called the data access layer of software or hardware and includes any functionality that needs to be accessed and navigated to by digital means.";
+
+            // let response =
+            //   "Cells are the basic units that make up the human body. Cells grow and divide to make new cells as the body needs them. Usually, cells die when they get too old or damaged. Then, new cells take their place. Cancer begins when genetic changes interfere with this orderly process. Cells start to grow uncontrollably. These cells may form a mass called a tumor. A tumor can be cancerous or benign. A cancerous tumor is malignant, meaning it can grow and spread to other parts of the body. A benign tumor means the tumor can grow but will not spread. Some types of cancer do not form a tumor. These include leukemias, most types of lymphoma, and myeloma.";
+            // let response =
+            //   "Love is one of the most profound emotions we experience as humans. It’s bigger than us, meaning, though we can invite it into our lives, we do not have the control over the how, when and where love starts to express itself. Maybe that’s why 72% of people believe in love at first sight. Sometimes, love truly does strike like a bolt of lightening to the chest, and you aren’t prepared for it Since love is inherently free, we spend nights tossing and turning in an attempt to understand what it is, and how to know if we have it. How do you define something so uncontrollable and versatile? That’s the tricky thing about love, we can feel it in a variety of different states–when we’re happy, sad, angry, confused or excited–and our attitudes about love can range from affectionate love, to infatuation and pleasure. We even use love as an action, as a force to keep our relationships with partners, or friends and family, together.";
           }
           if (res.error === "1") {
             // error from speech to text api
@@ -202,60 +213,7 @@ class MedicalQuestions extends React.Component {
 
   acceptDisease = () => {
     console.log("accept disease");
-    // this.setState({ canViewDisease: false, canViewQuestion: true });
-    this.setState({ canViewDisease: false, chatLoading: true });
-    // this.setState({ canViewQuestion: false, chatLoading: true });
-    const {
-      currentDiseaseIndex,
-      currentQuestionAnswerIndex,
-      allQuestions
-    } = this.state;
-    // fetch api to get final result
-    let response = `answer to what is cancer  : Cells are the basic units that make up the human body. Cells grow and divide to make new cells as the body needs them. Usually, cells die when they get too old or damaged. Then, new cells take their place. Cancer begins when genetic changes interfere with this orderly process. Cells start to grow uncontrollably. These cells may form a mass called a tumor. A tumor can be cancerous or benign. A cancerous tumor is malignant, meaning it can grow and spread to other parts of the body. A benign tumor means the tumor can grow but will not spread. Some types of cancer do not form a tumor. These include leukemias, most types of lymphoma, and myeloma.`;
-
-    const cuurentAnsewer = response;
-    // allQuestions[currentDiseaseIndex].answers[currentQuestionAnswerIndex];
-    let splittedResponse = this.splitResponse(cuurentAnsewer, 20);
-    this.setState({
-      chatSpeech: cuurentAnsewer,
-      chatSpeechArray: splittedResponse
-    });
-    // loop for splitted response to fetch sound of each them
-    splittedResponse.forEach((response, index) => {
-      let data = { text: response, index };
-      console.log(data);
-      // call text-to-speech api
-      fetch(textToSpeechUrl, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        method: "POST",
-        body: JSON.stringify(data)
-      })
-        .then(res => res.json())
-        .then(res => {
-          const { chatSoundArray } = this.state;
-          chatSoundArray.push({
-            data: res.data,
-            index: res.index === undefined ? 0 : res.index
-          });
-          // this.sound("data:audio/wav;base64," + res.data);
-          if (chatSoundArray.length === splittedResponse.length) {
-            this.setState({
-              chatLoading: false,
-              chatSoundArray: chatSoundArray.sort((a, b) =>
-                a.index > b.index ? 1 : b.index > a.index ? -1 : 0
-              )
-            });
-          } else {
-            this.setState({
-              chatSoundArray
-            });
-          }
-          // this.sound("data:audio/wav;base64," + res.data);
-        });
-    });
+    this.setState({ canViewDisease: false, canViewQuestion: true });
   };
 
   refuseDisease = () => {
@@ -353,10 +311,10 @@ class MedicalQuestions extends React.Component {
       currentDiseaseIndex,
       currentQuestionAnswerIndex
     } = this.state;
-
+    
     if (chatLoading) {
       const currentQuestion =
-        allQuestions[currentDiseaseIndex].questions[currentQuestionAnswerIndex];
+      allQuestions[currentDiseaseIndex].questions[currentQuestionAnswerIndex];
       return (
         <div>
           <h4 style={{ marginBottom: 10 }}>
@@ -368,7 +326,7 @@ class MedicalQuestions extends React.Component {
                 fontSize: "30px"
               }}
             >
-              {currentQuestion} {""} ?
+            {currentQuestion} {""} ?
             </span>
           </h4>
           <Loading size="large" />
@@ -378,7 +336,7 @@ class MedicalQuestions extends React.Component {
 
     if (chatSoundArray.length === chatSpeechArray.length && chatSpeech) {
       const currentQuestion =
-        allQuestions[currentDiseaseIndex].questions[currentQuestionAnswerIndex];
+      allQuestions[currentDiseaseIndex].questions[currentQuestionAnswerIndex];
       return (
         <div>
           <h4 style={{ marginBottom: 10 }}>
@@ -390,7 +348,7 @@ class MedicalQuestions extends React.Component {
                 fontSize: "30px"
               }}
             >
-              {currentQuestion} {""} ?
+            {currentQuestion} {""} ?
             </span>
           </h4>
           <div
